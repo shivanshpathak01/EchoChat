@@ -1,3 +1,4 @@
+import { OutgoingMessage } from "./messages/outgoingMessages";
 import { connection } from "websocket";
 
 interface  User{
@@ -40,6 +41,22 @@ export class UserManager{
         return user ?? null;
     }
 
-    broadcast(roomId: string, message:  )
+    broadcast(roomId: string, userId:string ,message: OutgoingMessage){
+        const user = this.getUser(roomId, userId);
+        if(!user){
+            console.error("User not found");
+            return;
+        }
+        const room = this.rooms.get(roomId);
+        if(!room){
+            console.error("Room not found"); 
+            return;
+         }
+         
+         room.users.forEach(({conn})=>{
+            conn.sendUTF(JSON.stringify(message))
+         })
+
+    }
 
 }
